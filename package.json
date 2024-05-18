@@ -1,0 +1,18 @@
+{
+  "name": "photo",
+  "version": "1.0.0",
+  "description": "this the a backend for the photo",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "photoUploader"
+  },
+  "keywords": [
+    "js"
+  ],
+  "author": "SudhirYadav5678",
+  "license": "ISC"
+}
