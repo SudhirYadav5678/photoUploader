@@ -12,4 +12,10 @@ app.use(express.urlencoded())// data getting from the url then space and special
 app.use(express.static("public"))// static use to store some files on own server(Public)
 app.use(cookiePareser()) //used for acces user cookies.
 
+
+
+import userRoutes from "./routes/user.routes.js"
+//route declerations
+app.use("/api/v1/users", userRoutes)
+
 export {app}
