@@ -9,7 +9,7 @@ app.use(cors({
 
 app.use(express.json({limit:"16kb"}))
 app.use(express.urlencoded())// data getting from the url then space and special character understood by urlencoded.
-app.use(express.static("public"))// static use to store some files on own server(Public)
+app.use(express.static("public/temp"))// static use to store some files on own server(Public)
 app.use(cookiePareser()) //used for acces user cookies.
 
 

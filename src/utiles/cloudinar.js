@@ -1,5 +1,5 @@
 import {v2 as cloudinary} from 'cloudinary';
-import {fs} from "fs" // node files System https://nodejs.org/api/fs.html used for files propertes delete, rename, etc.
+import fs from "fs" // node files System https://nodejs.org/api/fs.html used for files propertes delete, rename, etc.
 
           
 cloudinary.config({ 
@@ -16,7 +16,7 @@ const uploadOnCloudinary = async (localFilePath) => {
             resource_type: "auto"
         })
         // file has been uploaded successfull
-        //console.log("file is uploaded on cloudinary ", response.url);
+        console.log("file is uploaded on cloudinary ", response.url);
         fs.unlinkSync(localFilePath)
         return response;
 

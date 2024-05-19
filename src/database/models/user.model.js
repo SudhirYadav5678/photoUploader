@@ -1,5 +1,5 @@
 import mongoose, {Schema} from "mongoose"
-import bcrypt, { hash } from "bcryptjs"
+import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
 
 const userSchema= new Schema({
@@ -22,12 +22,20 @@ const userSchema= new Schema({
     phone:{
         type:Number,
         unique:[true, "Phone must be unique"]    
+    },
+    avatar:{
+        type:String,
+
+    },
+    refreshToke:{
+        type:String,
+
     }
 },{timestamps: true})
 
 userSchema.pre("save", async function(next){
     if (!this.isModified("password")){return next()}
-    this.password=bcrypt.hash(this.password, 10)
+    this.password= await bcrypt.hash(this.password, 10)
     next()
 })
 
@@ -61,4 +69,4 @@ userSchema.methods.generateRefreshAcessToken= function(){
 //     const hash= await bcrypt.hash(this.password, salt)
 // }
 
- export const User= mongoose.Model("Users", userSchema)
+export const User = mongoose.model("User", userSchema)
