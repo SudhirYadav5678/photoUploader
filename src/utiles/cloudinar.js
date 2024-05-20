@@ -3,9 +3,9 @@ import fs from "fs" // node files System https://nodejs.org/api/fs.html used for
 
           
 cloudinary.config({ 
-  cloud_name: process.env.CLOUD_NAME, 
-  api_key: process.env.API_KEY, 
-  api_secret:process.env.API_SECERT 
+  cloud_name: 'drpycshga', 
+  api_key: '392286212332692', 
+  api_secret:'P68EkfHQoFvJghz0-JCP15FaOas' 
 });
 
 const uploadOnCloudinary = async (localFilePath) => {

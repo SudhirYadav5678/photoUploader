@@ -29,7 +29,7 @@ const register= asyncHandler(async(req, res)=>{
     })) {
         throw new ApiError(400, "all fiels are required.")
     }
-    const existedUser=User.findOne({
+    const existedUser= await User.findOne({
         $or:[{email}] //$or operater used for find the multiple optins.
     })
     if (existedUser) {
@@ -39,7 +39,9 @@ const register= asyncHandler(async(req, res)=>{
 
     const avatarLocalPath=req.files?.avatar[0].path //get files path with multer 
     console.log(avatarLocalPath,"avatarLocalPath");
-
+    if (!avatarLocalPath) {
+        throw new ApiError(400, "Avatar file is required")
+    }
     const avatar= await uploadOnCloudinary(avatarLocalPath)
     console.log(avatar, "avatar");
 
@@ -51,6 +53,7 @@ const register= asyncHandler(async(req, res)=>{
         password,
         phone:phone || "",
         avatar:avatar.url
+        
     })
     const createdUser= await User.findById(user._id)
     .select("-password -refreshToke ")  //-field remove these files
