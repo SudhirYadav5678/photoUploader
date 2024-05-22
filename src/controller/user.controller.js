@@ -4,6 +4,16 @@ import { User } from "../database/models/user.model.js"
 import {uploadOnCloudinary} from "../utiles/cloudinar.js"
 import {ApiResponse} from "../utiles/apiResponces.js"
 
+// refresh and access token
+const getRefreshAndAccessToken= async function(userId){
+    const user= await User.findById(userId)
+    const accessToken= await user.generateAcessToken()
+    const refreshToken= await user.generateRefreshAcessToken()
+    user.refreshToken=refreshToken
+    await user.save({validateBeforeSave:false})
+    return {accessToken, refreshToken}
+}
+
 const register= asyncHandler(async(req, res)=>{
     // get user details from frontend
     // validation - not empty
@@ -30,7 +40,7 @@ const register= asyncHandler(async(req, res)=>{
         throw new ApiError(400, "all fiels are required.")
     }
     const existedUser= await User.findOne({
-        $or:[{email}] //$or operater used for find the multiple optins.
+        $or:[{email}] //$or mongodb operater used for find the multiple optins.
     })
     if (existedUser) {
         throw new ApiError(400, "email aready used please provide other email")
@@ -67,4 +77,69 @@ const register= asyncHandler(async(req, res)=>{
     )
 })
 
-export {register}
+
+//login
+const userLogin= async function(){
+    //registerications
+    //get email and password req body
+    // check user info.
+    //refreshtoken  access check
+    //send cookies
+    //route login
+    const [email, password]=req.body
+    if (!email && !password) {
+        throw new ApiError(400, "email and password are required")}
+    
+    const user= User.findOne({email})
+    if (!user) {
+        throw new ApiError(400, "user does not exist")
+    }
+    const ispasswordVaild= await user.isPasswordCorrect(password)
+    if (!ispasswordVaild) {
+        throw new ApiError(401, "incorrect password")
+    }
+    //create refresh token
+    const {accessToken, refreshToken} =await getRefreshAndAccessToken(user._id)
+
+    //send cookies
+    const options={
+        httpOnly:true,
+        secure:true,
+    }
+    return res.status(200)
+    .cookie("accessToken", accessToken, options)
+    .cookie("refershToken", refreshToken, options)
+    .json(
+        new ApiResponse(200, {user:accessToken, refreshToken}, "user login successfully")
+    )
+
+}
+
+//logout
+const userLogout= async function(){
+    //user access
+    //check login 
+    //delete cookies
+    //refreshtoken delete
+    //route logout
+     await User.findByIdAndUpdate( //database token clear
+        req.user._id,{
+            $set:{refreshToken:undefined},//mongoose operater $set
+             
+        },{
+            new:true,
+        }
+    ) //authmiddleware
+
+    const options={
+        httpOnly:true,
+        secure:true
+    }
+    return res.status(200).clearCookie("accessToken", options)
+    .clearCookie("refreshToken", options)
+    .json(new ApiResponse(200, {}, "user logout "))
+    
+
+
+}
+export {register, userLogin, userLogout}

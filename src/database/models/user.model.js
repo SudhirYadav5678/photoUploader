@@ -25,10 +25,10 @@ const userSchema= new Schema({
     },
     avatar:{
         type:String,
-        
-
+        required:[true,"avater is required"],
+        default:"A"
     },
-    refreshToke:{
+    refreshToken:{
         type:String,
 
     }
@@ -64,10 +64,4 @@ userSchema.methods.generateRefreshAcessToken= function(){
      }
 )
 }
-
-// const  encruptedPassword= async function(){
-//     const salt= await bcrypt.genSalt(10)
-//     const hash= await bcrypt.hash(this.password, salt)
-// }
-
 export const User = mongoose.model("User", userSchema)
