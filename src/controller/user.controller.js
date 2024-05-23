@@ -4,14 +4,22 @@ import { User } from "../database/models/user.model.js"
 import {uploadOnCloudinary} from "../utiles/cloudinar.js"
 import {ApiResponse} from "../utiles/apiResponces.js"
 
-// refresh and access token
-const getRefreshAndAccessToken= async function(userId){
-    const user= await User.findById(userId)
-    const accessToken= await user.generateAcessToken()
-    const refreshToken= await user.generateRefreshAcessToken()
-    user.refreshToken=refreshToken
-    await user.save({validateBeforeSave:false})
-    return {accessToken, refreshToken}
+//refresh and access token
+const generateAccessAndRefereshTokens = async(userId) =>{
+    try {
+        const user = await User.findById(userId)
+        const accessToken = user.generateAccessToken()
+        const refreshToken = user.generateRefreshToken()
+
+        user.refreshToken = refreshToken
+        await user.save({ validateBeforeSave: false })
+
+        return {accessToken, refreshToken}
+
+
+    } catch (error) {
+        throw new ApiError(500, "Something went wrong while generating referesh and access token")
+    }
 }
 
 const register= asyncHandler(async(req, res)=>{
@@ -48,12 +56,12 @@ const register= asyncHandler(async(req, res)=>{
     }
 
     const avatarLocalPath=req.files?.avatar[0].path //get files path with multer 
-    console.log(avatarLocalPath,"avatarLocalPath");
+    //console.log(avatarLocalPath,"avatarLocalPath");
     if (!avatarLocalPath) {
         throw new ApiError(400, "Avatar file is required")
     }
     const avatar= await uploadOnCloudinary(avatarLocalPath)
-    console.log(avatar, "avatar");
+    //console.log(avatar, "avatar");
 
 
     // database entry 
@@ -79,27 +87,21 @@ const register= asyncHandler(async(req, res)=>{
 
 
 //login
-const userLogin= async function(){
-    //registerications
-    //get email and password req body
-    // check user info.
-    //refreshtoken  access check
-    //send cookies
-    //route login
-    const [email, password]=req.body
+const userLogin= asyncHandler(async(req, res)=>{
+    const {email, password}= req.body
     if (!email && !password) {
         throw new ApiError(400, "email and password are required")}
     
     const user= User.findOne({email})
     if (!user) {
         throw new ApiError(400, "user does not exist")
-    }
-    const ispasswordVaild= await user.isPasswordCorrect(password)
+    };
+    const ispasswordVaild= await user.isPasswordCorrect(password);
     if (!ispasswordVaild) {
-        throw new ApiError(401, "incorrect password")
-    }
+         throw new ApiError(401, "incorrect password")
+     }
     //create refresh token
-    const {accessToken, refreshToken} =await getRefreshAndAccessToken(user._id)
+    const {accessToken, refreshToken} = await generateAccessAndRefereshTokens(user._id)
 
     //send cookies
     const options={
@@ -114,6 +116,14 @@ const userLogin= async function(){
     )
 
 }
+)
+    //registerications
+    //get email and password req body
+    // check user info.
+    //refreshtoken  access check
+    //send cookies
+    //route login
+    
 
 //logout
 const userLogout= async function(){

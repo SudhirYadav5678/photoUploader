@@ -1,4 +1,4 @@
-import { asyncHandler } from "../utiles/asyncHandler";
+import { asyncHandler } from "../utiles/asyncHandler.js";
 import {ApiError} from "../utiles/apiError.js"
 import jwt from "jsonwebtoken"
 import { User } from "../database/models/user.model.js";
@@ -11,7 +11,7 @@ const verifyJwt= asyncHandler(async(req, _, next)=>{ //_ used because _ not used
         throw new ApiError(401, "Unauthoriaztion access")
     }
 
-    const decodedToen= await jwt.verify(token, process.env.JWT_ACCESS_TOKEN)
+    const decodedToen=  jwt.verify(token, process.env.JWT_ACCESS_TOKEN)
 
     const user= User.findById(decodedToen?._id).select( "-password -refreshToken" )
     if (!user) {
