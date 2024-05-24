@@ -26,7 +26,6 @@ const userSchema= new Schema({
     avatar:{
         type:String,
         required:[true,"avater is required"],
-        default:"A"
     },
     refreshToken:{
         type:String,
