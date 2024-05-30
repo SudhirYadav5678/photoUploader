@@ -25,7 +25,7 @@ const userSchema= new Schema({
     },
     avatar:{
         type:String,
-        required:[true,"avater is required"],
+        //required:[true,"avater is required"],
     },
     refreshToken:{
         type:String,
